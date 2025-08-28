@@ -19,5 +19,6 @@
 #' }
 #'
 #' @docType data
+#' @references \doi{10.1007/978-3-031-24907-5_40}
 #' @source <https://www.coachcox.co.uk/imstats/race/2148/results/>
 "ironman"
