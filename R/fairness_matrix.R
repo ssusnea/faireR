@@ -60,3 +60,58 @@ test <- metrics_mlr3(data = ironman, truth = "y", estimate = "y_hat", class = "G
 
 print(test)
 
+# define a function building off of yardstick metrics
+
+metrics_yardstick <- function(data, truth, estimate, class) {
+
+  # create confusion matrices using yardstick syntax
+
+  ## this is for multiple levels to the class
+  conf_matrix <- data |>
+    group_by({{ class }}) |>
+    conf_mat(truth, estimate)|>
+    mutate(tidied = lapply(conf_mat, broom::tidy))
+
+  # summary_stats <- summary(conf_matrix)
+
+  ## but let's first figure it out for just one, like a minimally minimally viable product:
+
+  summary1 <- conf_matrix[[1,3]]
+
+  summary_stats <- summary(summary1)
+
+  ## return for testing:
+  # return(conf_matrix)
+  return(summary_stats)
+
+  # stats <- summary(conf_matrix)
+}
+
+test2 <- metrics_yardstick(data = ironman, truth = "y", estimate = "y_hat", class = Gender)
+
+
+## trying a minimally viable version, for only one level of protected class:
+yardstick_minimal <- function(data, truth, estimate, class, filter) {
+
+  # thinking:
+  ## summary function will return metrics in the same order every time,
+  ## so couldn't we hard code the subsetting?
+  ## or I guess we could filter the data frame reporting the stats
+
+  ### lets say we want sensitivity, specificity, and ppv, that's:
+  ### rows 3, 4, and 5
+
+  # create a confusion matrix for a single level in protected class
+  conf_matrix <- data |>
+    filter({{ class }} == {{ filter }}) |>
+    conf_mat(truth, estimate)
+
+  # compute summary statistics:
+  summary_stats <- summary(conf_matrix)
+
+  metrics <- summary_stats[3:5, ]
+
+  return(metrics)
+}
+
+test3 <- yardstick_minimal(data = ironman, truth = "y", estimate = "y_hat", class = Gender, filter = "Female")
