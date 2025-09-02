@@ -60,7 +60,7 @@ test <- metrics_mlr3(data = ironman, truth = "y", estimate = "y_hat", class = "G
 
 print(test)
 
-# define a function building off of yardstick metrics
+# define a function building off of yardstick metrics using grouped confusion matrices
 
 metrics_yardstick <- function(data, truth, estimate, class) {
 
@@ -115,3 +115,20 @@ yardstick_minimal <- function(data, truth, estimate, class, filter) {
 }
 
 test3 <- yardstick_minimal(data = ironman, truth = "y", estimate = "y_hat", class = Gender, filter = "Female")
+
+
+again <- function(data, truth, estimate, class) {
+
+  # get levels of class:
+  col <- data |>
+    select({{ class }})
+
+  levels <- distinct(col)
+
+  # my first thought is to use a for loop, but maybe a vectorized function is better here
+
+}
+
+debug(again)
+
+again(data = ironman, truth = y, estimate = y_hat, class = "Gender")
