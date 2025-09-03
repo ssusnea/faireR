@@ -35,3 +35,18 @@
 #' @references \doi{10.1007/978-3-031-24907-5_40}
 #' @source <https://www.coachcox.co.uk/imstats/race/2148/results/>
 "ironman"
+
+#' COMPAS data
+#'
+#' @docType data
+#' @seealso [mlr3fairness::compas]
+"compas_binary"
+
+#' Master's swimming the 1650
+#' @description
+#' Time, in seconds, for master's swimmers in the 1650 freestyle event.
+#' The data covers the years 2006-2016.
+#' @docType data
+#' @references \doi{10.1515/jqas-2024-0018}
+#' @source <https://github.com/elizabeth-upton/Age_and_Performance_SwimRun>
+"swimming1650"
