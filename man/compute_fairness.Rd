@@ -43,7 +43,8 @@ compute_fairness(
 )
 
 # Compute fairness for Texas Ironman
-# columns with non-standard data types
+
+# remove columns with non-standard data types
 bad <- c("overall_time", "world_record")
 ironman2 <- ironman[, !names(ironman) \%in\% bad]
 
