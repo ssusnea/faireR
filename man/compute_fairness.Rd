@@ -25,6 +25,7 @@ Compute fairness metrics
 Computes our chosen fairness metrics.
 }
 \examples{
+# Compute fairness for COMPAS data
 compas <- compas_binary$data()
 compute_fairness(
   data = compas,
@@ -32,6 +33,28 @@ compute_fairness(
   prediction = factor(ifelse(compas$score_text == "High", 1, 0)),
   protected_attribute = "race"
 )
+
+# Compute fairness for MLB pitch data
+compute_fairness(
+  data = csas25,
+  target = "y",
+  prediction = csas25$y_hat,
+  protected_attribute = "stand"
+)
+
+# Compute fairness for Texas Ironman
+
+# remove columns with non-standard data types
+bad <- c("overall_time", "world_record")
+ironman2 <- ironman[, !names(ironman) \%in\% bad]
+
+compute_fairness(
+  data = ironman2,
+  target = "y",
+  prediction = ironman$y_hat,
+  protected_attribute = "gender"
+)
+
 }
 \seealso{
 \code{\link[mlr3fairness:compute_metrics]{mlr3fairness::compute_metrics()}}
