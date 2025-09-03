@@ -24,3 +24,5 @@ LazyData: true
 Imports: 
     mlr3,
     mlr3fairness
+Suggests:
+    baseballr
