@@ -8,11 +8,11 @@
 #' @format ## `ironman`
 #' A data frame with 70 rows and 8 columns:
 #' \describe{
-#'  \item{Gender}{Individual's gender}
-#'  \item{Division}{Individual's division within the competition}
-#'  \item{Division Rank}{Individual's ranking within their division}
-#'  \item{Overall Time}{Individual's total time to complete the race}
-#'  \item{Finish Status}{Indicates if an individual completed the race or not}
+#'  \item{gender}{Individual's gender}
+#'  \item{division}{Individual's division within the competition}
+#'  \item{division_rank}{Individual's ranking within their division}
+#'  \item{overall_time}{Individual's total time to complete the race}
+#'  \item{finish_status}{Indicates if an individual completed the race or not}
 #'  \item{y}{Indicates if the individual was awarded prize money or not}
 #'  \item{quotient_model}{Quotient between an individual's overall time and the 2024 world reccord}
 #'  \item{y_hat}{Indicates if an individual would've recieved prize money or not using Martens and Starflinger's quotient method}
