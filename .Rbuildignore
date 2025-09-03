@@ -1,2 +1,5 @@
 ^faireR\.Rproj$
 ^\.Rproj\.user$
+^data-raw$
+^data-large$
+^LICENSE\.md$
