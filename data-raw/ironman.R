@@ -20,11 +20,9 @@ ironman <- marathon |>
   filter(division %in% c("MPRO", "FPRO") & finish_status == "Finisher") |>
   left_join(params, by = join_by(gender)) |>
   mutate(
-    y = ifelse(division_rank <= 10, 1, 0),
+    y = as.factor(ifelse(division_rank <= 10, 1, 0)),
     quotient_model = hms(overall_time) / world_record,
-    y_hat = ifelse(division_rank <= max_rank, 1, 0),
-    y = as.factor(y),
-    y_hat = as.factor(y_hat)
+    y_hat = as.factor(ifelse(division_rank <= max_rank, 1, 0)),
   )
 
 usethis::use_data(ironman, overwrite = TRUE)
