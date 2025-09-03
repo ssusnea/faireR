@@ -21,3 +21,6 @@ BugReports: https://github.com/ssusnea/faireR/issues
 Depends: 
     R (>= 3.5)
 LazyData: true
+Imports: 
+    mlr3,
+    mlr3fairness
