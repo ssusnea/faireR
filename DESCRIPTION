@@ -22,6 +22,7 @@ Depends:
     R (>= 3.5)
 LazyData: true
 Imports: 
+    dplyr,
     mlr3,
     mlr3fairness
 Suggests:
