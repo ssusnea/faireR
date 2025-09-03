@@ -41,6 +41,19 @@ compute_fairness(
   prediction = csas25$y_hat,
   protected_attribute = "stand"
 )
+
+# Compute fairness for Texas Ironman
+# columns with non-standard data types
+bad <- c("overall_time", "world_record")
+ironman2 <- ironman[, !names(ironman) \%in\% bad]
+
+compute_fairness(
+  data = ironman2,
+  target = "y",
+  prediction = ironman$y_hat,
+  protected_attribute = "gender"
+)
+
 }
 \seealso{
 \code{\link[mlr3fairness:compute_metrics]{mlr3fairness::compute_metrics()}}
