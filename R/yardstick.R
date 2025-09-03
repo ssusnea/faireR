@@ -1,7 +1,11 @@
+globalVariables(c(".estimate", ".metric", "obs"))
+
 #' Compute fairness metrics using yardstick
+#' @inheritParams yardstick::ppv
 #' @export
+#' @seealso [yardstick::metric_set()], [yardstick]
 #' @examplesIf require(dplyr)
-#' # Compute separation measure for Ironman
+#' # Compute independence measure for Ironman
 #' ironman |>
 #'   group_by(gender) |>
 #'   fairness_independence(truth = y, estimate = y_hat)
@@ -23,6 +27,7 @@ fairness_independence <- fairness_cv
 #' @export
 #' @rdname fairness_cv
 #' @examplesIf require(dplyr)
+#' # Compute separation measure for Ironman
 #' ironman |>
 #'   group_by(gender) |>
 #'   fairness_separation(truth = y, estimate = y_hat)

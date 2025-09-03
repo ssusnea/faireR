@@ -21,17 +21,34 @@ fairness_predictive_parity(data, truth, estimate)
 
 fairness_sufficiency(data, truth, estimate)
 }
+\arguments{
+\item{data}{Either a \code{data.frame} containing the columns specified by the
+\code{truth} and \code{estimate} arguments, or a \code{table}/\code{matrix} where the true
+class results should be in the columns of the table.}
+
+\item{truth}{The column identifier for the true class results
+(that is a \code{factor}). This should be an unquoted column name although
+this argument is passed by expression and supports
+\link[rlang:topic-inject]{quasiquotation} (you can unquote column
+names). For \verb{_vec()} functions, a \code{factor} vector.}
+
+\item{estimate}{The column identifier for the predicted class
+results (that is also \code{factor}). As with \code{truth} this can be
+specified different ways but the primary method is to use an
+unquoted variable name. For \verb{_vec()} functions, a \code{factor} vector.}
+}
 \description{
 Compute fairness metrics using yardstick
 }
 \examples{
 \dontshow{if (require(dplyr)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-# Compute separation measure for Ironman
+# Compute independence measure for Ironman
 ironman |>
   group_by(gender) |>
   fairness_independence(truth = y, estimate = y_hat)
 \dontshow{\}) # examplesIf}
 \dontshow{if (require(dplyr)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Compute separation measure for Ironman
 ironman |>
   group_by(gender) |>
   fairness_separation(truth = y, estimate = y_hat)
@@ -42,4 +59,7 @@ ironman |>
   group_by(gender) |>
   fairness_sufficiency(truth = y, estimate = y_hat)
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[yardstick:metric_set]{yardstick::metric_set()}}, \link{yardstick}
 }

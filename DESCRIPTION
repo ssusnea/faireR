@@ -24,6 +24,7 @@ LazyData: true
 Imports: 
     dplyr,
     mlr3,
-    mlr3fairness
+    mlr3fairness,
+    yardstick
 Suggests:
     baseballr
