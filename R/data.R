@@ -6,13 +6,15 @@
 #' predicted outcomes derived from Marten and Starflinger's proposed quotient method
 #'
 #' @format ## `ironman`
-#' A data frame with 70 rows and 8 columns:
+#' A data frame with 70 rows and 10 columns:
 #' \describe{
 #'  \item{gender}{Individual's gender}
 #'  \item{division}{Individual's division within the competition}
 #'  \item{division_rank}{Individual's ranking within their division}
 #'  \item{overall_time}{Individual's total time to complete the race}
 #'  \item{finish_status}{Indicates if an individual completed the race or not}
+#'  \item{world_record}{The 2025 Texas Ironman world record for men and women}
+#'  \item{max_rank}{The maximum number of winners for men and women respectively using the Quotient Model}
 #'  \item{y}{Indicates if the individual was awarded prize money or not}
 #'  \item{quotient_model}{Quotient between an individual's overall time and the 2024 world reccord}
 #'  \item{y_hat}{Indicates if an individual would've recieved prize money or not using Martens and Starflinger's quotient method}
