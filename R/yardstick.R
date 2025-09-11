@@ -1,4 +1,6 @@
-globalVariables(c(".estimate", ".metric", "obs"))
+globalVariables(
+  c(".estimate", ".metric", "obs", "abs_diff", "coordinate", "y", "y_hat")
+)
 
 #' Compute fairness metrics using yardstick
 #' @inheritParams yardstick::ppv
@@ -56,9 +58,6 @@ fairness_sufficiency <- fairness_predictive_parity
 #'   fairness_cube(truth = y, estimate = y_hat)
 
 fairness_cube <- function(data, truth = y, estimate = y_hat) {
-  # why?????????
-  requireNamespace("lubridate")
-
   blah <- yardstick::metric_set(
     yardstick::detection_prevalence,
     yardstick::sens,

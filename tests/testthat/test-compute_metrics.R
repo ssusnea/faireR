@@ -40,25 +40,11 @@ test_that("metric_set works", {
   blah <- yardstick::metric_set(
     yardstick::detection_prevalence,
   )
-  requireNamespace("lubridate")
   blah(faireR::ironman, truth = y, estimate = y_hat)
-  blah(faireR::ironman, truth = y, estimate = y_hat)
-
-  expect_s3_class(fairness_cube(ironman), "tbl")
-
-
-  blah <- yardstick::metric_set(
-    yardstick::detection_prevalence,
-  )
-  faireR::ironman |>
-    dplyr::mutate(world_record = as.POSIXct(world_record)) |>
-    blah(truth = y, estimate = y_hat)
 })
 
 
-
 test_that("yardstick works", {
-  skip()
   bad <- c("overall_time", "world_record")
   ironman2 <- ironman[, !names(ironman) %in% bad]
   ironman_vec <- compute_fairness(
@@ -68,7 +54,6 @@ test_that("yardstick works", {
     protected_attribute = "gender"
   )
 
-  library(faireR)
   ironman_grp <- ironman |>
     dplyr::group_by(gender)
 
@@ -109,4 +94,7 @@ test_that("yardstick works", {
     ),
     cube
   )
+
+  expect_s3_class(cube, "tbl")
+
 })

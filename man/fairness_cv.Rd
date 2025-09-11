@@ -46,25 +46,25 @@ unquoted variable name. For \verb{_vec()} functions, a \code{factor} vector.}
 Compute fairness metrics using yardstick
 }
 \examples{
-\dontshow{if (require(dplyr)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Compute independence measure for Ironman
 ironman |>
   group_by(gender) |>
   fairness_independence(truth = y, estimate = y_hat)
 \dontshow{\}) # examplesIf}
-\dontshow{if (require(dplyr)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Compute separation measure for Ironman
 ironman |>
   group_by(gender) |>
   fairness_separation(truth = y, estimate = y_hat)
 \dontshow{\}) # examplesIf}
-\dontshow{if (require(dplyr)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Compute sufficiency measure for Ironman
 ironman |>
   group_by(gender) |>
   fairness_sufficiency(truth = y, estimate = y_hat)
 \dontshow{\}) # examplesIf}
-\dontshow{if (require(dplyr)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Compute fairness measures for Ironman
 ironman |>
   group_by(gender) |>
@@ -72,5 +72,5 @@ ironman |>
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[yardstick:metric_set]{yardstick::metric_set()}}, \link{yardstick}
+\code{\link[yardstick:metric_set]{yardstick::metric_set()}}, \link[yardstick:yardstick-package]{yardstick::yardstick}
 }

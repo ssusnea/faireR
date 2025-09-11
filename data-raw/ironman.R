@@ -23,6 +23,7 @@ ironman <- marathon |>
     y = as.factor(ifelse(division_rank <= 10, 1, 0)),
     quotient_model = hms(overall_time) / world_record,
     y_hat = as.factor(ifelse(division_rank <= max_rank, 1, 0)),
+    world_record = as.difftime(as.numeric(world_record), units = "secs")
   )
 
 usethis::use_data(ironman, overwrite = TRUE)
