@@ -23,9 +23,11 @@ Depends:
 LazyData: true
 Imports: 
     dplyr,
+    ggplot2,
     mlr3,
     mlr3fairness,
     tidyr,
+    patchwork,
     yardstick
 Suggests:
     baseballr,
