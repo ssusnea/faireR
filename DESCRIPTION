@@ -28,6 +28,7 @@ Imports:
     mlr3fairness,
     tidyr,
     patchwork,
+    plotly,
     yardstick
 Suggests:
     baseballr,

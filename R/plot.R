@@ -21,9 +21,16 @@ globalVariables(c("independence", "separation", "sufficiency"))
 #'   group_by(race) |>
 #'   fairness_cube(truth = two_year_recid, estimate = is_high_risk)
 #'
-#' list(d1, d2, d3) |>
-#'   bind_rows() |>
+#' d <- list(d1, d2, d3) |>
+#'   bind_rows()
+#'
+#' # Plot a series of 2D plots
+#' d |>
 #'   plot_fairness()
+#'
+#' # Plot a 3D plots
+#' d |>
+#'   plotly_fairness()
 
 plot_fairness <- function(data, ...) {
   p1 <- ggplot2::ggplot(data, ggplot2::aes(x = independence, y = separation)) +
@@ -39,4 +46,21 @@ plot_fairness <- function(data, ...) {
 
   list(p1, p2, p3) |>
     patchwork::wrap_plots(axes = "collect")
+}
+
+#' @rdname plot_fairness
+#' @export
+
+plotly_fairness <- function(data, ...) {
+  data |>
+    plotly::plot_ly(x = ~independence, y = ~separation, z = ~sufficiency, type = "scatter3d", mode = "markers") |>
+    plotly::layout(
+      title = "Fairness",
+      scene = list(
+        xaxis = list(title = "Independence"),
+        yaxis = list(title = "Separation"),
+        zaxis = list(title = "Sufficiency")
+      )
+    ) |>
+    plotly::add_markers(x = 0, y = 0, z = 0)
 }
