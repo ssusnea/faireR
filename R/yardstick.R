@@ -66,10 +66,8 @@ fairness_cube <- function(data, truth = y, estimate = y_hat) {
     yardstick::npv
   )
 
-  tmp <- data |>
-    blah(truth = {{ truth }}, estimate = {{ estimate }})
-
-  tmp |>
+  data |>
+    blah(truth = {{ truth }}, estimate = {{ estimate }}) |>
     dplyr::mutate(
       .estimate = ifelse(.metric == "spec", 1 - .estimate, .estimate),
       coordinate = dplyr::case_when(
