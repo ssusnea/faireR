@@ -9,15 +9,8 @@ globalVariables(c(".estimate", ".metric", "obs"))
 #' ironman |>
 #'   group_by(gender) |>
 #'   fairness_independence(truth = y, estimate = y_hat)
-
-fairness_cv <- function(data, truth, estimate) {
-  msr <- yardstick::metric_set(yardstick::detection_prevalence)
-
-  data |>
-    msr(obs, truth = {{ truth }}, estimate = {{ estimate }}) |>
-    dplyr::summarize(
-      calder_weavers = abs(diff(.estimate))
-    )
+fairness_cv <- function(...) {
+  fairness_cube(...)[["independence"]]
 }
 
 #' @export
@@ -31,18 +24,8 @@ fairness_independence <- fairness_cv
 #' ironman |>
 #'   group_by(gender) |>
 #'   fairness_separation(truth = y, estimate = y_hat)
-
-fairness_eod <- function(data, truth, estimate) {
-  msr <- yardstick::metric_set(yardstick::sens, yardstick::spec)
-
-  data |>
-    msr(obs, truth = {{ truth }}, estimate = {{ estimate }}) |>
-    dplyr::mutate(
-      .estimate = ifelse(.metric == "spec", 1 - .estimate, .estimate)
-    ) |>
-    dplyr::summarize(
-      equalized_odds = mean(abs(diff(.estimate)))
-    )
+fairness_eod <- function(...) {
+  fairness_cube(...)[["separation"]]
 }
 
 #' @export
@@ -56,14 +39,8 @@ fairness_separation <- fairness_eod
 #' ironman |>
 #'   group_by(gender) |>
 #'   fairness_sufficiency(truth = y, estimate = y_hat)
-fairness_predictive_parity <- function(data, truth, estimate) {
-  msr <- yardstick::metric_set(yardstick::ppv, yardstick::npv)
-
-  data |>
-    msr(obs, truth = {{ truth }}, estimate = {{ estimate }}) |>
-    dplyr::summarize(
-      predictive_parity = mean(abs(diff(.estimate)))
-    )
+fairness_predictive_parity <- function(...) {
+  fairness_cube(...)[["sufficiency"]]
 }
 
 #' @export
@@ -77,8 +54,12 @@ fairness_sufficiency <- fairness_predictive_parity
 #' ironman |>
 #'   group_by(gender) |>
 #'   fairness_cube(truth = y, estimate = y_hat)
-fairness_cube <- function(data, truth, estimate) {
-  msr <- yardstick::metric_set(
+
+fairness_cube <- function(data, truth = y, estimate = y_hat) {
+  # why?????????
+  requireNamespace("lubridate")
+
+  blah <- yardstick::metric_set(
     yardstick::detection_prevalence,
     yardstick::sens,
     yardstick::spec,
@@ -86,8 +67,10 @@ fairness_cube <- function(data, truth, estimate) {
     yardstick::npv
   )
 
-  data |>
-    msr(obs, truth = {{ truth }}, estimate = {{ estimate }}) |>
+  tmp <- data |>
+    blah(truth = {{ truth }}, estimate = {{ estimate }})
+
+  tmp |>
     dplyr::mutate(
       .estimate = ifelse(.metric == "spec", 1 - .estimate, .estimate),
       coordinate = dplyr::case_when(
@@ -97,10 +80,13 @@ fairness_cube <- function(data, truth, estimate) {
         .default = as.character("")
       )
     ) |>
-    dplyr::group_by(gender, coordinate) |>
+    dplyr::group_by(coordinate, .metric) |>
     dplyr::summarize(
-      calder_weavers = abs(diff(.estimate)),
-      equalized_odds = abs(diff(.estimate)),
-      predictive_parity = abs(diff(.estimate))
-    )
+      abs_diff = abs(diff(.estimate))
+    ) |>
+    dplyr::group_by(coordinate) |>
+    dplyr::summarize(
+      mad = mean(abs_diff)
+    ) |>
+    tidyr::pivot_wider(names_from = "coordinate", values_from = "mad")
 }

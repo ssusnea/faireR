@@ -37,16 +37,14 @@
 #'   protected_attribute = "gender"
 #' )
 #'
-
 compute_fairness <- function(data, target, prediction, protected_attribute) {
-
   requireNamespace("mlr3fairness", quietly = TRUE)
 
   # see page 61, independence in the binary case is demographic parity
   ind <- mlr3::msr("fairness.cv")
   # see page 82, separation is equivalent to equalized odds
   sep <- mlr3::msr("fairness.eod")
-  suf <- c(mlr3::msr("fairness.fpr"), mlr3::msr("fairness.tpr"))
+  suf <- mlr3::msr("fairness.pp")
 
   ours <- c(ind, sep, suf)
 
@@ -58,4 +56,3 @@ compute_fairness <- function(data, target, prediction, protected_attribute) {
     metrics = ours
   )
 }
-
