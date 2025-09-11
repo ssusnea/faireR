@@ -4,7 +4,7 @@ library(tidyverse)
 library(ggplot2)
 
 # start with 2021, the most recent year they used in their analysis
-dipsea2021 <- read.csv(here::here("data-large/dipsea2021_data.csv")) |>
+dipsea2021 <- read.csv(here::here("data-raw/dipsea2021_data.csv")) |>
   select(!c(City, Time.to.Cardiac)) |>
   filter(Race == "Invitational")
 
@@ -58,4 +58,4 @@ smooth_model <- lm(Head.Start ~ poly(Age, degree = 2), data = dipsea2021)
 
 
 
-usethis::use_data(dipsea, overwrite = TRUE)
+usethis::use_data(dipsea2021, overwrite = TRUE)
