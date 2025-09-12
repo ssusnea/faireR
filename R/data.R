@@ -50,3 +50,11 @@
 #' @references \doi{10.1515/jqas-2024-0018}
 #' @source <https://github.com/elizabeth-upton/Age_and_Performance_SwimRun>
 "swimming1650"
+
+#' New Zealand master's swimming
+#' @description Time, in seconds, for New Zealand master's swimmers in different events.
+#' The data covers years 2013-2020
+#' @docType data
+#' @references \doi{10.1515/jqas-2023-0051}
+#' @source <https://osf.io/gcpwv>
+"nz_swim"
