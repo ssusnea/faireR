@@ -51,9 +51,18 @@
 #' @source <https://github.com/elizabeth-upton/Age_and_Performance_SwimRun>
 "swimming1650"
 
+#' New Zealand master's swimming
+#' @description Time, in seconds, for New Zealand master's swimmers in different events.
+#' The data covers years 2013-2020
+#' @docType data
+#' @references \doi{10.1515/jqas-2023-0051}
+#' @source <https://osf.io/gcpwv>
+"nz_swim"
+
 #' Dipsea 2021 race results
 #' @description Results for the 2021 Dipsea race.
 #' @docType data
 #' @references \doi{10.1080/09332480.2022.2145138}
 #' @source <https://www.dipsea.org/search/dipsearesults.php>
 "dipsea2021"
+
