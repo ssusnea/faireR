@@ -1,7 +1,7 @@
 globalVariables(c("independence", "separation", "sufficiency"))
 
 #' Plot fairness measures
-#' @param data a [tibble::tibble] of output from [fairness_cube()]
+#' @param data a [data.frame] of output from [fairness_cube()]
 #' @param ... currently ignored
 #' @export
 #' @examplesIf require(dplyr)

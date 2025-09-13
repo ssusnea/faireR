@@ -29,6 +29,7 @@ Imports:
     tidyr,
     patchwork,
     plotly,
+    tibble,
     yardstick
 Suggests:
     baseballr,
