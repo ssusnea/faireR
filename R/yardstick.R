@@ -1,4 +1,6 @@
-globalVariables(c(".estimate", ".metric", "obs"))
+globalVariables(
+  c(".estimate", ".metric", "obs", "abs_diff", "coordinate", "y", "y_hat")
+)
 
 #' Compute fairness metrics using yardstick
 #' @inheritParams yardstick::ppv
@@ -9,15 +11,8 @@ globalVariables(c(".estimate", ".metric", "obs"))
 #' ironman |>
 #'   group_by(gender) |>
 #'   fairness_independence(truth = y, estimate = y_hat)
-
-fairness_cv <- function(data, truth, estimate) {
-  msr <- yardstick::metric_set(yardstick::detection_prevalence)
-
-  data |>
-    msr(obs, truth = {{ truth }}, estimate = {{ estimate }}) |>
-    dplyr::summarize(
-      calder_weavers = abs(diff(.estimate))
-    )
+fairness_cv <- function(...) {
+  fairness_cube(...)[["independence"]]
 }
 
 #' @export
@@ -31,18 +26,8 @@ fairness_independence <- fairness_cv
 #' ironman |>
 #'   group_by(gender) |>
 #'   fairness_separation(truth = y, estimate = y_hat)
-
-fairness_eod <- function(data, truth, estimate) {
-  msr <- yardstick::metric_set(yardstick::sens, yardstick::spec)
-
-  data |>
-    msr(obs, truth = {{ truth }}, estimate = {{ estimate }}) |>
-    dplyr::mutate(
-      .estimate = ifelse(.metric == "spec", 1 - .estimate, .estimate)
-    ) |>
-    dplyr::summarize(
-      equalized_odds = mean(abs(diff(.estimate)))
-    )
+fairness_eod <- function(...) {
+  fairness_cube(...)[["separation"]]
 }
 
 #' @export
@@ -56,16 +41,61 @@ fairness_separation <- fairness_eod
 #' ironman |>
 #'   group_by(gender) |>
 #'   fairness_sufficiency(truth = y, estimate = y_hat)
-fairness_predictive_parity <- function(data, truth, estimate) {
-  msr <- yardstick::metric_set(yardstick::ppv, yardstick::npv)
-
-  data |>
-    msr(obs, truth = {{ truth }}, estimate = {{ estimate }}) |>
-    dplyr::summarize(
-      predictive_parity = mean(abs(diff(.estimate)))
-    )
+fairness_predictive_parity <- function(...) {
+  fairness_cube(...)[["sufficiency"]]
 }
 
 #' @export
 #' @rdname fairness_cv
 fairness_sufficiency <- fairness_predictive_parity
+
+#' @export
+#' @rdname fairness_cv
+#' @examplesIf require(dplyr)
+#' # Compute fairness measures for Ironman
+#' ironman |>
+#'   group_by(gender) |>
+#'   fairness_cube(truth = y, estimate = y_hat)
+#'
+#' # Compute fairness measures for baseball
+#' csas25 |>
+#'   group_by(stand) |>
+#'   fairness_cube()
+#'
+#' # Compute fairness measures for COMPAS
+#' compas_binary$data() |>
+#'   mutate(is_high_risk = factor(ifelse(score_text == "High", 1, 0))) |>
+#'   group_by(race) |>
+#'   fairness_cube(truth = two_year_recid, estimate = is_high_risk)
+#'
+
+fairness_cube <- function(data, truth = y, estimate = y_hat) {
+  blah <- yardstick::metric_set(
+    yardstick::detection_prevalence,
+    yardstick::sens,
+    yardstick::spec,
+    yardstick::ppv,
+    yardstick::npv
+  )
+
+  data |>
+    blah(truth = {{ truth }}, estimate = {{ estimate }}) |>
+    dplyr::mutate(
+      .estimate = ifelse(.metric == "spec", 1 - .estimate, .estimate),
+      coordinate = dplyr::case_when(
+        grepl("prevalence", .metric) ~ "independence",
+        grepl("sens|spec", .metric) ~ "separation",
+        grepl("pv", .metric) ~ "sufficiency",
+        .default = as.character("")
+      )
+    ) |>
+    dplyr::group_by(coordinate, .metric) |>
+    dplyr::summarize(
+      abs_diff = abs(diff(.estimate))
+    ) |>
+    dplyr::group_by(coordinate) |>
+    dplyr::summarize(
+      mad = mean(abs_diff)
+    ) |>
+    tidyr::pivot_wider(names_from = "coordinate", values_from = "mad")
+}
