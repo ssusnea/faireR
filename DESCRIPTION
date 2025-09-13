@@ -1,6 +1,6 @@
 Package: faireR
 Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9004
+Version: 0.0.0.9005
 Authors@R: c(
     person("Sarah", "Susnea", , "ssusnea@gmail.com", role = c("cre"),
            comment = c(ORCID = "YOUR-ORCID-ID")),
