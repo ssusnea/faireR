@@ -10,7 +10,7 @@ plot_fairness(data, ...)
 plotly_fairness(data, ...)
 }
 \arguments{
-\item{data}{a \link[tibble:tibble]{tibble::tibble} of output from \code{\link[=fairness_cube]{fairness_cube()}}}
+\item{data}{a \link{data.frame} of output from \code{\link[=fairness_cube]{fairness_cube()}}}
 
 \item{...}{currently ignored}
 }
