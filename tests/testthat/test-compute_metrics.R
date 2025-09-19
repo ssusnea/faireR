@@ -13,26 +13,32 @@ test_that("metrics works", {
   expect_type(compas_vec, "double")
   expect_length(compas_vec, 3)
 
-  csas_vec <- csas25 |>
+  csas <- csas25 |>
     dplyr::mutate(
-      y = factor(is_within_strike_zone),
-      y_hat = factor(is_called_strike)
-    ) |>
-    compute_fairness(
-      target = "y",
-      prediction = .data$y_hat,
-      protected_attribute = "stand"
+      y = factor(ifelse(is_within_strike_zone, 1, 0)),
+      y_hat = factor(ifelse(is_called_strike, 1, 0))
     )
+  csas_vec <- compute_fairness(
+    data = csas,
+    target = "y",
+    prediction = csas$y_hat,
+    protected_attribute = "stand"
+  )
 
   expect_type(csas_vec, "double")
   expect_length(csas_vec, 3)
 
   bad <- c("overall_time", "world_record")
-  ironman2 <- ironman[, !names(ironman) %in% bad]
+  ironman2 <- ironman[, !names(ironman) %in% bad] |>
+    dplyr::mutate(
+     y = factor(division_rank <= 10),
+     y_hat = factor(dplyr::dense_rank(quotient_model) <= 20)
+    )
+
   ironman_vec <- compute_fairness(
     data = ironman2,
     target = "y",
-    prediction = ironman$y_hat,
+    prediction = ironman2$y_hat,
     protected_attribute = "gender"
   )
   expect_type(ironman_vec, "double")
@@ -44,22 +50,32 @@ test_that("metric_set works", {
   blah <- yardstick::metric_set(
     yardstick::detection_prevalence,
   )
-  blah(faireR::ironman, truth = y, estimate = y_hat)
+
+  ironman |>
+    dplyr::mutate(
+      y = factor(division_rank <= 10),
+      y_hat = factor(dplyr::dense_rank(quotient_model) <= 20)
+    ) |>
+  blah(truth = y, estimate = y_hat)
 })
 
 
 test_that("yardstick works", {
-  bad <- c("overall_time", "world_record")
-  ironman2 <- ironman[, !names(ironman) %in% bad]
-  ironman_vec <- compute_fairness(
-    data = ironman2,
-    target = "y",
-    prediction = ironman$y_hat,
-    protected_attribute = "gender"
-  )
-
   ironman_grp <- ironman |>
+    dplyr::mutate(
+      y = factor(division_rank <= 10),
+      y_hat = factor(dplyr::dense_rank(quotient_model) <= 20)
+    ) |>
     dplyr::group_by(gender)
+
+  ironman_vec <- ironman_grp |>
+    dplyr::select(-overall_time, -world_record) |>
+    compute_fairness(
+      target = "y",
+      prediction = ironman_grp$y_hat,
+      protected_attribute = "gender"
+    )
+
 
   fairness_cube(ironman_grp, truth = y, estimate = y_hat)
   # independence
@@ -74,13 +90,14 @@ test_that("yardstick works", {
   expect_equal(eod, fairness_separation(ironman_grp))
   expect_equal(eod, unname(ironman_vec["fairness.equalized_odds"]))
 
-  eod_mlr <- mlr3fairness::compute_metrics(
-    data = ironman2,
-    target = "y",
-    prediction = faireR::ironman$y_hat,
-    protected_attribute = "gender",
-    metrics = mlr3::msr("fairness.eod")
-  )
+  eod_mlr <- ironman_grp |>
+    dplyr::select(-overall_time, -world_record) |>
+    mlr3fairness::compute_metrics(
+      target = "y",
+      prediction = ironman_grp$y_hat,
+      protected_attribute = "gender",
+      metrics = mlr3::msr("fairness.eod")
+    )
 
   # sufficiency
   pp <- fairness_predictive_parity(ironman_grp)

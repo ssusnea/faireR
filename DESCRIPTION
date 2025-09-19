@@ -1,6 +1,6 @@
 Package: faireR
 Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9005
+Version: 0.0.0.9006
 Authors@R: c(
     person("Sarah", "Susnea", , "ssusnea@gmail.com", role = c("cre"),
            comment = c(ORCID = "YOUR-ORCID-ID")),
@@ -19,7 +19,7 @@ RoxygenNote: 7.3.3
 URL: https://github.com/ssusnea/faireR
 BugReports: https://github.com/ssusnea/faireR/issues
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1)
 LazyData: true
 Imports: 
     dplyr,
@@ -29,9 +29,9 @@ Imports:
     tidyr,
     patchwork,
     plotly,
-    tibble,
     yardstick
 Suggests:
     baseballr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    tibble
 Config/testthat/edition: 3

@@ -17,6 +17,17 @@ compute_fairness2(data, truth, estimate)
 \item{prediction}{(\code{vector}) \cr A vector containing predictions.}
 
 \item{protected_attribute}{(\code{character}) \cr The name(s) of the protected attributes(s). Must be available in \code{data}.}
+
+\item{truth}{The column identifier for the true class results
+(that is a \code{factor}). This should be an unquoted column name although
+this argument is passed by expression and supports
+\link[rlang:topic-inject]{quasiquotation} (you can unquote column
+names). For \verb{_vec()} functions, a \code{factor} vector.}
+
+\item{estimate}{The column identifier for the predicted class
+results (that is also \code{factor}). As with \code{truth} this can be
+specified different ways but the primary method is to use an
+unquoted variable name. For \verb{_vec()} functions, a \code{factor} vector.}
 }
 \value{
 a \code{double} of length 4
@@ -37,21 +48,37 @@ compute_fairness(
   protected_attribute = "race"
 )
 
+# Compute fairness for MLB pitch data
+csas25$y <- factor(ifelse(csas25$is_within_strike_zone, 1, 0))
+compute_fairness(
+  data = csas25,
+  target = "y",
+  prediction = factor(ifelse(csas25$is_called_strike, 1, 0)),
+  protected_attribute = "stand"
+)
+
+# Compute fairness for Texas Ironman
+
+# remove columns with non-standard data types
+bad <- c("overall_time", "world_record")
+ironman2 <- ironman[, !names(ironman) \%in\% bad]
+ironman2$y = factor(ironman2$division_rank <= 10)
+ironman2$y_hat = factor(dplyr::dense_rank(ironman2$quotient_model) <= 20)
+compute_fairness(
+  data = ironman2,
+  target = "y",
+  prediction = ironman2$y_hat,
+  protected_attribute = "gender"
+)
+
+\dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Use a tidy-interface
 compas |>
   mutate(y_hat = factor(ifelse(score_text == "High", 1, 0))) |>
   group_by(race) |>
   compute_fairness2(truth = "two_year_recid", estimate = "y_hat")
 
-# Compute fairness for MLB pitch data
-compute_fairness(
-  data = csas25,
-  target = "y",
-  prediction = csas25$y_hat,
-  protected_attribute = "stand"
-)
-
-Use a tidy-interface
+# Use a tidy-interface
 csas25 |>
   mutate(
     y = factor(ifelse(is_within_strike_zone, 1, 0)),
@@ -62,20 +89,7 @@ csas25 |>
     truth = "y",
     estimate = "y_hat"
   )
-
-# Compute fairness for Texas Ironman
-
-# remove columns with non-standard data types
-bad <- c("overall_time", "world_record")
-ironman2 <- ironman[, !names(ironman) \%in\% bad]
-
-compute_fairness(
-  data = ironman2,
-  target = "y",
-  prediction = ironman$y_hat,
-  protected_attribute = "gender"
-)
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[mlr3fairness:compute_metrics]{mlr3fairness::compute_metrics()}}

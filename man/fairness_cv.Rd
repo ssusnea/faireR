@@ -47,32 +47,29 @@ Compute fairness metrics using yardstick
 }
 \examples{
 \dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
-# Compute independence measure for Ironman
-ironman |>
-  group_by(gender) |>
-  fairness_independence(truth = y, estimate = y_hat)
 \dontshow{\}) # examplesIf}
 \dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
-# Compute separation measure for Ironman
-ironman |>
-  group_by(gender) |>
-  fairness_separation(truth = y, estimate = y_hat)
-\dontshow{\}) # examplesIf}
-\dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
-# Compute sufficiency measure for Ironman
-ironman |>
-  group_by(gender) |>
-  fairness_sufficiency(truth = y, estimate = y_hat)
 \dontshow{\}) # examplesIf}
 \dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Compute fairness measures for Ironman
-ironman |>
+ironman_grp <- ironman |>
   mutate(
     y = factor(division_rank <= 10),
     y_hat = factor(dense_rank(quotient_model) <= 20)
   ) |>
-  group_by(gender) |>
+  group_by(gender)
+
+ironman_grp |>
   fairness_cube()
+
+ironman_grp |>
+  fairness_independence()
+
+ironman_grp |>
+  fairness_separation()
+
+ironman_grp |>
+  fairness_sufficiency()
 
 # Compute fairness measures for baseball
 csas25 |>

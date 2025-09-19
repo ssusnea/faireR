@@ -16,42 +16,26 @@
 #'   protected_attribute = "race"
 #' )
 #'
-#' # Use a tidy-interface
-#' compas |>
-#'   mutate(y_hat = factor(ifelse(score_text == "High", 1, 0))) |>
-#'   group_by(race) |>
-#'   compute_fairness2(truth = "two_year_recid", estimate = "y_hat")
-#'
 #' # Compute fairness for MLB pitch data
+#' csas25$y <- factor(ifelse(csas25$is_within_strike_zone, 1, 0))
 #' compute_fairness(
 #'   data = csas25,
 #'   target = "y",
-#'   prediction = csas25$y_hat,
+#'   prediction = factor(ifelse(csas25$is_called_strike, 1, 0)),
 #'   protected_attribute = "stand"
 #' )
-#'
-#' Use a tidy-interface
-#' csas25 |>
-#'   mutate(
-#'     y = factor(ifelse(is_within_strike_zone, 1, 0)),
-#'     y_hat = factor(ifelse(is_called_strike, 1, 0)),
-#'   ) |>
-#'   group_by(stand) |>
-#'   compute_fairness2(
-#'     truth = "y",
-#'     estimate = "y_hat"
-#'   )
 #'
 #' # Compute fairness for Texas Ironman
 #'
 #' # remove columns with non-standard data types
 #' bad <- c("overall_time", "world_record")
 #' ironman2 <- ironman[, !names(ironman) %in% bad]
-#'
+#' ironman2$y = factor(ironman2$division_rank <= 10)
+#' ironman2$y_hat = factor(dplyr::dense_rank(ironman2$quotient_model) <= 20)
 #' compute_fairness(
 #'   data = ironman2,
 #'   target = "y",
-#'   prediction = ironman$y_hat,
+#'   prediction = ironman2$y_hat,
 #'   protected_attribute = "gender"
 #' )
 #'
@@ -77,7 +61,26 @@ compute_fairness <- function(data, target, prediction, protected_attribute) {
 
 #' @rdname compute_fairness
 #' @export
-
+#' @inheritParams fairness_cube
+#' @examplesIf require(dplyr)
+#' # Use a tidy-interface
+#' compas |>
+#'   mutate(y_hat = factor(ifelse(score_text == "High", 1, 0))) |>
+#'   group_by(race) |>
+#'   compute_fairness2(truth = "two_year_recid", estimate = "y_hat")
+#'
+#' # Use a tidy-interface
+#' csas25 |>
+#'   mutate(
+#'     y = factor(ifelse(is_within_strike_zone, 1, 0)),
+#'     y_hat = factor(ifelse(is_called_strike, 1, 0)),
+#'   ) |>
+#'   group_by(stand) |>
+#'   compute_fairness2(
+#'     truth = "y",
+#'     estimate = "y_hat"
+#'   )
+#'
 compute_fairness2 <- function(data, truth, estimate) {
   requireNamespace("mlr3fairness", quietly = TRUE)
 
