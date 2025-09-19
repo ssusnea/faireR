@@ -76,6 +76,14 @@ test_that("yardstick works", {
       protected_attribute = "gender"
     )
 
+  ironman_vec2 <- ironman_grp |>
+    dplyr::select(-overall_time, -world_record) |>
+    compute_fairness_tidy(
+      truth = "y",
+      estimate = "y_hat"
+    )
+
+  expect_identical(ironman_vec, ironman_vec2)
 
   fairness_cube(ironman_grp, truth = y, estimate = y_hat)
   # independence

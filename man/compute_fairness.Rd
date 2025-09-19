@@ -2,12 +2,12 @@
 % Please edit documentation in R/mlr3fairness.R
 \name{compute_fairness}
 \alias{compute_fairness}
-\alias{compute_fairness2}
+\alias{compute_fairness_tidy}
 \title{Compute fairness metrics}
 \usage{
 compute_fairness(data, target, prediction, protected_attribute)
 
-compute_fairness2(data, truth, estimate)
+compute_fairness_tidy(data, truth, estimate)
 }
 \arguments{
 \item{data}{(\code{data.table}) \cr The dataset used for predicting.}
@@ -57,26 +57,13 @@ compute_fairness(
   protected_attribute = "stand"
 )
 
-# Compute fairness for Texas Ironman
-
-# remove columns with non-standard data types
-bad <- c("overall_time", "world_record")
-ironman2 <- ironman[, !names(ironman) \%in\% bad]
-ironman2$y = factor(ironman2$division_rank <= 10)
-ironman2$y_hat = factor(dplyr::dense_rank(ironman2$quotient_model) <= 20)
-compute_fairness(
-  data = ironman2,
-  target = "y",
-  prediction = ironman2$y_hat,
-  protected_attribute = "gender"
-)
-
 \dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Use a tidy-interface
+compas <- compas_binary$data()
 compas |>
   mutate(y_hat = factor(ifelse(score_text == "High", 1, 0))) |>
   group_by(race) |>
-  compute_fairness2(truth = "two_year_recid", estimate = "y_hat")
+  compute_fairness_tidy(truth = "two_year_recid", estimate = "y_hat")
 
 # Use a tidy-interface
 csas25 |>
@@ -85,10 +72,22 @@ csas25 |>
     y_hat = factor(ifelse(is_called_strike, 1, 0)),
   ) |>
   group_by(stand) |>
-  compute_fairness2(
+  compute_fairness_tidy(
     truth = "y",
     estimate = "y_hat"
   )
+
+# Compute fairness for Texas Ironman
+
+ironman |>
+  # remove columns with non-standard data types
+  select(-overall_time, -world_record) |>
+  mutate(
+    y = factor(division_rank <= 10),
+    y_hat = factor(dense_rank(quotient_model) <= 20)
+  ) |>
+  group_by(gender) |>
+  compute_fairness_tidy(truth = "y", estimate = "y_hat")
 \dontshow{\}) # examplesIf}
 }
 \seealso{

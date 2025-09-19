@@ -25,20 +25,7 @@
 #'   protected_attribute = "stand"
 #' )
 #'
-#' # Compute fairness for Texas Ironman
-#'
-#' # remove columns with non-standard data types
-#' bad <- c("overall_time", "world_record")
-#' ironman2 <- ironman[, !names(ironman) %in% bad]
-#' ironman2$y = factor(ironman2$division_rank <= 10)
-#' ironman2$y_hat = factor(dplyr::dense_rank(ironman2$quotient_model) <= 20)
-#' compute_fairness(
-#'   data = ironman2,
-#'   target = "y",
-#'   prediction = ironman2$y_hat,
-#'   protected_attribute = "gender"
-#' )
-#'
+
 compute_fairness <- function(data, target, prediction, protected_attribute) {
   requireNamespace("mlr3fairness", quietly = TRUE)
 
@@ -64,10 +51,11 @@ compute_fairness <- function(data, target, prediction, protected_attribute) {
 #' @inheritParams fairness_cube
 #' @examplesIf require(dplyr)
 #' # Use a tidy-interface
+#' compas <- compas_binary$data()
 #' compas |>
 #'   mutate(y_hat = factor(ifelse(score_text == "High", 1, 0))) |>
 #'   group_by(race) |>
-#'   compute_fairness2(truth = "two_year_recid", estimate = "y_hat")
+#'   compute_fairness_tidy(truth = "two_year_recid", estimate = "y_hat")
 #'
 #' # Use a tidy-interface
 #' csas25 |>
@@ -76,32 +64,34 @@ compute_fairness <- function(data, target, prediction, protected_attribute) {
 #'     y_hat = factor(ifelse(is_called_strike, 1, 0)),
 #'   ) |>
 #'   group_by(stand) |>
-#'   compute_fairness2(
+#'   compute_fairness_tidy(
 #'     truth = "y",
 #'     estimate = "y_hat"
 #'   )
 #'
-compute_fairness2 <- function(data, truth, estimate) {
-  requireNamespace("mlr3fairness", quietly = TRUE)
-
-  # see page 61, independence in the binary case is demographic parity
-  ind <- mlr3::msr("fairness.cv")
-  # see page 82, separation is equivalent to equalized odds
-  sep <- mlr3::msr("fairness.eod")
-  suf <- mlr3::msr("fairness.pp")
-
-  ours <- c(ind, sep, suf)
+#' # Compute fairness for Texas Ironman
+#'
+#' ironman |>
+#'   # remove columns with non-standard data types
+#'   select(-overall_time, -world_record) |>
+#'   mutate(
+#'     y = factor(division_rank <= 10),
+#'     y_hat = factor(dense_rank(quotient_model) <= 20)
+#'   ) |>
+#'   group_by(gender) |>
+#'   compute_fairness_tidy(truth = "y", estimate = "y_hat")
+#'
+compute_fairness_tidy <- function(data, truth, estimate) {
 
   protected_attribute <- data |>
     dplyr::group_vars() |>
     # currently only one group!!!
     utils::head(1)
 
-  mlr3fairness::compute_metrics(
-    data = data,
-    target = {{ truth }},
-    prediction = data[[estimate]],
-    protected_attribute = protected_attribute,
-    metrics = ours
-  )
+  data |>
+    compute_fairness(
+      target = {{ truth }},
+      prediction = data[[estimate]],
+      protected_attribute = protected_attribute
+    )
 }
