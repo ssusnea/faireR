@@ -2,9 +2,12 @@
 % Please edit documentation in R/mlr3fairness.R
 \name{compute_fairness}
 \alias{compute_fairness}
+\alias{compute_fairness2}
 \title{Compute fairness metrics}
 \usage{
 compute_fairness(data, target, prediction, protected_attribute)
+
+compute_fairness2(data, truth, estimate)
 }
 \arguments{
 \item{data}{(\code{data.table}) \cr The dataset used for predicting.}
@@ -34,6 +37,12 @@ compute_fairness(
   protected_attribute = "race"
 )
 
+# Use a tidy-interface
+compas |>
+  mutate(y_hat = factor(ifelse(score_text == "High", 1, 0))) |>
+  group_by(race) |>
+  compute_fairness2(truth = "two_year_recid", estimate = "y_hat")
+
 # Compute fairness for MLB pitch data
 compute_fairness(
   data = csas25,
@@ -41,6 +50,18 @@ compute_fairness(
   prediction = csas25$y_hat,
   protected_attribute = "stand"
 )
+
+Use a tidy-interface
+csas25 |>
+  mutate(
+    y = factor(ifelse(is_within_strike_zone, 1, 0)),
+    y_hat = factor(ifelse(is_called_strike, 1, 0)),
+  ) |>
+  group_by(stand) |>
+  compute_fairness2(
+    truth = "y",
+    estimate = "y_hat"
+  )
 
 # Compute fairness for Texas Ironman
 

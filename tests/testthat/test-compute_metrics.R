@@ -13,12 +13,16 @@ test_that("metrics works", {
   expect_type(compas_vec, "double")
   expect_length(compas_vec, 3)
 
-  csas_vec <- compute_fairness(
-    data = csas25,
-    target = "y",
-    prediction = csas25$y_hat,
-    protected_attribute = "stand"
-  )
+  csas_vec <- csas25 |>
+    dplyr::mutate(
+      y = factor(is_within_strike_zone),
+      y_hat = factor(is_called_strike)
+    ) |>
+    compute_fairness(
+      target = "y",
+      prediction = .data$y_hat,
+      protected_attribute = "stand"
+    )
 
   expect_type(csas_vec, "double")
   expect_length(csas_vec, 3)

@@ -54,11 +54,19 @@ fairness_sufficiency <- fairness_predictive_parity
 #' @examplesIf require(dplyr)
 #' # Compute fairness measures for Ironman
 #' ironman |>
+#'   mutate(
+#'     y = factor(division_rank <= 10),
+#'     y_hat = factor(dense_rank(quotient_model) <= 20)
+#'   ) |>
 #'   group_by(gender) |>
-#'   fairness_cube(truth = y, estimate = y_hat)
+#'   fairness_cube()
 #'
 #' # Compute fairness measures for baseball
 #' csas25 |>
+#'   mutate(
+#'     y = factor(is_within_strike_zone),
+#'     y_hat = factor(is_called_strike)
+#'   ) |>
 #'   group_by(stand) |>
 #'   fairness_cube()
 #'
