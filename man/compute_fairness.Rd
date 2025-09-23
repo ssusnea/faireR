@@ -40,11 +40,10 @@ Computes our chosen fairness metrics.
 }
 \examples{
 # Compute fairness for COMPAS data
-compas <- compas_binary$data()
 compute_fairness(
-  data = compas,
+  data = compas_binary,
   target = "two_year_recid",
-  prediction = factor(ifelse(compas$score_text == "High", 1, 0)),
+  prediction = factor(ifelse(compas_binary$score_text == "High", 1, 0)),
   protected_attribute = "race"
 )
 
@@ -59,8 +58,7 @@ compute_fairness(
 
 \dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Use a tidy-interface
-compas <- compas_binary$data()
-compas |>
+compas_binary |>
   mutate(y_hat = factor(ifelse(score_text == "High", 1, 0))) |>
   group_by(race) |>
   compute_fairness_tidy(truth = "two_year_recid", estimate = "y_hat")

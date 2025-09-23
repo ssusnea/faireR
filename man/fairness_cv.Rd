@@ -81,7 +81,7 @@ csas25 |>
   fairness_cube()
 
 # Compute fairness measures for COMPAS
-compas_binary$data() |>
+compas_binary |>
   mutate(is_high_risk = factor(ifelse(score_text == "High", 1, 0))) |>
   group_by(race) |>
   fairness_cube(truth = two_year_recid, estimate = is_high_risk)

@@ -1,13 +1,12 @@
 test_that("metrics works", {
-  expect_s3_class(compas_binary, "TaskClassif")
+  expect_s3_class(compas_binary, "tbl")
   expect_s3_class(ironman, "tbl")
   expect_s3_class(csas25, "tbl")
 
-  compas <- compas_binary$data()
   compas_vec <- compute_fairness(
-    data = compas,
+    data = compas_binary,
     target = "two_year_recid",
-    prediction = factor(ifelse(compas$score_text == "High", 1, 0)),
+    prediction = factor(ifelse(compas_binary$score_text == "High", 1, 0)),
     protected_attribute = "race"
   )
   expect_type(compas_vec, "double")

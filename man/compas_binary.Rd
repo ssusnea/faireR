@@ -5,7 +5,7 @@
 \alias{compas_binary}
 \title{COMPAS data}
 \format{
-An object of class \code{TaskClassif} (inherits from \code{TaskSupervised}, \code{Task}, \code{R6}) of length 60.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 5278 rows and 11 columns.
 }
 \usage{
 compas_binary
