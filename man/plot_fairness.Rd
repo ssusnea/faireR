@@ -21,16 +21,24 @@ Plot fairness measures
 \dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Compute fairness measures for Ironman
 d1 <- ironman |>
+  mutate(
+    y = factor(division_rank <= 10),
+    y_hat = factor(dense_rank(quotient_model) <= 20)
+  ) |>
   group_by(gender) |>
   fairness_cube(truth = y, estimate = y_hat)
 
 # Compute fairness measures for baseball
 d2 <- csas25 |>
+  mutate(
+    y = factor(is_within_strike_zone),
+    y_hat = factor(is_called_strike)
+  ) |>
   group_by(stand) |>
   fairness_cube()
 
 # Compute fairness measures for COMPAS
-d3 <- compas_binary$data() |>
+d3 <- compas_binary |>
   mutate(is_high_risk = factor(ifelse(score_text == "High", 1, 0))) |>
   group_by(race) |>
   fairness_cube(truth = two_year_recid, estimate = is_high_risk)

@@ -47,36 +47,41 @@ Compute fairness metrics using yardstick
 }
 \examples{
 \dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
-# Compute independence measure for Ironman
-ironman |>
-  group_by(gender) |>
-  fairness_independence(truth = y, estimate = y_hat)
 \dontshow{\}) # examplesIf}
 \dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
-# Compute separation measure for Ironman
-ironman |>
-  group_by(gender) |>
-  fairness_separation(truth = y, estimate = y_hat)
-\dontshow{\}) # examplesIf}
-\dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
-# Compute sufficiency measure for Ironman
-ironman |>
-  group_by(gender) |>
-  fairness_sufficiency(truth = y, estimate = y_hat)
 \dontshow{\}) # examplesIf}
 \dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
 # Compute fairness measures for Ironman
-ironman |>
-  group_by(gender) |>
-  fairness_cube(truth = y, estimate = y_hat)
+ironman_grp <- ironman |>
+  mutate(
+    y = factor(division_rank <= 10),
+    y_hat = factor(dense_rank(quotient_model) <= 20)
+  ) |>
+  group_by(gender)
+
+ironman_grp |>
+  fairness_cube()
+
+ironman_grp |>
+  fairness_independence()
+
+ironman_grp |>
+  fairness_separation()
+
+ironman_grp |>
+  fairness_sufficiency()
 
 # Compute fairness measures for baseball
 csas25 |>
+  mutate(
+    y = factor(is_within_strike_zone),
+    y_hat = factor(is_called_strike)
+  ) |>
   group_by(stand) |>
   fairness_cube()
 
 # Compute fairness measures for COMPAS
-compas_binary$data() |>
+compas_binary |>
   mutate(is_high_risk = factor(ifelse(score_text == "High", 1, 0))) |>
   group_by(race) |>
   fairness_cube(truth = two_year_recid, estimate = is_high_risk)

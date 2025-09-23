@@ -2,9 +2,12 @@
 % Please edit documentation in R/mlr3fairness.R
 \name{compute_fairness}
 \alias{compute_fairness}
+\alias{compute_fairness_tidy}
 \title{Compute fairness metrics}
 \usage{
 compute_fairness(data, target, prediction, protected_attribute)
+
+compute_fairness_tidy(data, truth, estimate)
 }
 \arguments{
 \item{data}{(\code{data.table}) \cr The dataset used for predicting.}
@@ -14,6 +17,17 @@ compute_fairness(data, target, prediction, protected_attribute)
 \item{prediction}{(\code{vector}) \cr A vector containing predictions.}
 
 \item{protected_attribute}{(\code{character}) \cr The name(s) of the protected attributes(s). Must be available in \code{data}.}
+
+\item{truth}{The column identifier for the true class results
+(that is a \code{factor}). This should be an unquoted column name although
+this argument is passed by expression and supports
+\link[rlang:topic-inject]{quasiquotation} (you can unquote column
+names). For \verb{_vec()} functions, a \code{factor} vector.}
+
+\item{estimate}{The column identifier for the predicted class
+results (that is also \code{factor}). As with \code{truth} this can be
+specified different ways but the primary method is to use an
+unquoted variable name. For \verb{_vec()} functions, a \code{factor} vector.}
 }
 \value{
 a \code{double} of length 4
@@ -26,35 +40,53 @@ Computes our chosen fairness metrics.
 }
 \examples{
 # Compute fairness for COMPAS data
-compas <- compas_binary$data()
 compute_fairness(
-  data = compas,
+  data = compas_binary,
   target = "two_year_recid",
-  prediction = factor(ifelse(compas$score_text == "High", 1, 0)),
+  prediction = factor(ifelse(compas_binary$score_text == "High", 1, 0)),
   protected_attribute = "race"
 )
 
 # Compute fairness for MLB pitch data
+csas25$y <- factor(ifelse(csas25$is_within_strike_zone, 1, 0))
 compute_fairness(
   data = csas25,
   target = "y",
-  prediction = csas25$y_hat,
+  prediction = factor(ifelse(csas25$is_called_strike, 1, 0)),
   protected_attribute = "stand"
 )
 
+\dontshow{if (require(dplyr)) withAutoprint(\{ # examplesIf}
+# Use a tidy-interface
+compas_binary |>
+  mutate(y_hat = factor(ifelse(score_text == "High", 1, 0))) |>
+  group_by(race) |>
+  compute_fairness_tidy(truth = "two_year_recid", estimate = "y_hat")
+
+# Use a tidy-interface
+csas25 |>
+  mutate(
+    y = factor(ifelse(is_within_strike_zone, 1, 0)),
+    y_hat = factor(ifelse(is_called_strike, 1, 0)),
+  ) |>
+  group_by(stand) |>
+  compute_fairness_tidy(
+    truth = "y",
+    estimate = "y_hat"
+  )
+
 # Compute fairness for Texas Ironman
 
-# remove columns with non-standard data types
-bad <- c("overall_time", "world_record")
-ironman2 <- ironman[, !names(ironman) \%in\% bad]
-
-compute_fairness(
-  data = ironman2,
-  target = "y",
-  prediction = ironman$y_hat,
-  protected_attribute = "gender"
-)
-
+ironman |>
+  # remove columns with non-standard data types
+  select(-overall_time, -world_record) |>
+  mutate(
+    y = factor(division_rank <= 10),
+    y_hat = factor(dense_rank(quotient_model) <= 20)
+  ) |>
+  group_by(gender) |>
+  compute_fairness_tidy(truth = "y", estimate = "y_hat")
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[mlr3fairness:compute_metrics]{mlr3fairness::compute_metrics()}}
