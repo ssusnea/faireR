@@ -66,3 +66,7 @@
 #' @source <https://www.dipsea.org/search/dipsearesults.php>
 "dipsea2021"
 
+#' Baseball Holl of Fame classifier data
+#' @docType data
+#' @references <https://baseballwithr.wordpress.com/2014/11/18/building-a-hall-of-fame-classifier-2/>
+"hof2025"

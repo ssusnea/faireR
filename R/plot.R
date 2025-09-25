@@ -72,3 +72,23 @@ plotly_fairness <- function(data, ...) {
     ) |>
     plotly::add_markers(x = 0, y = 0, z = 0)
 }
+
+#' @export
+#' @examplesIf require(dplyr)
+#' # example code
+#'
+#' hof2025 |>
+#'   mutate(is_pitcher = tSO > 100) |>
+#'   group_by(is_pitcher) |>
+#'   plot_independence()
+#'
+
+plot_independence <- function(data, truth = y, estimate = y_hat, ...) {
+  protected_attribute <- data |>
+    dplyr::group_vars() |>
+    # currently only one group!!!
+    utils::head(1)
+
+  ggplot2::ggplot(data, ggplot2::aes(x = protected_attribute, y = y_hat)) +
+    ggplot2::geom_col()
+}
