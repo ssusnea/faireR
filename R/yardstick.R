@@ -5,7 +5,7 @@ globalVariables(
 #' Compute fairness metrics using yardstick
 #' @inheritParams yardstick::ppv
 #' @export
-#' @seealso [yardstick::metric_set()], [yardstick]
+#' @seealso [yardstick::metric_set()]
 #' @examplesIf require(dplyr)
 fairness_cv <- function(...) {
   fairness_cube(...)[["independence"]]
