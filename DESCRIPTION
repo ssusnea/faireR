@@ -29,6 +29,7 @@ Imports:
     tidyr,
     patchwork,
     plotly,
+    rlang,
     yardstick
 Suggests:
     baseballr,

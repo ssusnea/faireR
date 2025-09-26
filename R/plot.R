@@ -1,4 +1,5 @@
-globalVariables(c("independence", "separation", "sufficiency"))
+globalVariables(c("independence", "separation", "sufficiency", ".pred_1", "n",
+                  "num_obs", "pct_pos"))
 
 #' Plot fairness measures
 #' @param data a [data.frame] of output from [fairness_cube()]
@@ -71,4 +72,58 @@ plotly_fairness <- function(data, ...) {
       )
     ) |>
     plotly::add_markers(x = 0, y = 0, z = 0)
+}
+
+#' Plot fairness metrics
+#' @inheritParams yardstick::ppv
+#' @export
+#' @examplesIf require(dplyr)
+#' # example code
+#'
+#' hof_grp <- hof2025 |>
+#'   mutate(is_pitcher = tSO > 100) |>
+#'   group_by(is_pitcher)
+#'
+#' hof_grp |>
+#'   plot_independence()
+#'
+#' hof_grp |>
+#'   plot_separation()
+
+plot_independence <- function(data, truth = y, estimate = y_hat, ...) {
+  protected_attribute <- data |>
+    dplyr::group_vars() |>
+    # currently only one group!!!
+    utils::head(1)
+
+  data |>
+    yardstick::detection_prevalence(truth = {{ truth }}, estimate = {{ estimate }}) |>
+    ggplot2::ggplot(
+      ggplot2::aes(x = !!rlang::sym(protected_attribute), y = .estimate)
+    ) +
+    ggplot2::geom_col()
+}
+
+#' @export
+#' @rdname plot_independence
+
+plot_separation <- function(data, truth = y, ...) {
+  data |>
+    yardstick::roc_curve(truth = {{ truth }}, .pred_1) |>
+    ggplot2::autoplot()
+}
+
+
+#' @export
+#' @rdname plot_independence
+
+plot_sufficiency <- function(data, truth = y, ...) {
+  data |>
+    dplyr::group_by(.pred_1) |>
+    dplyr::summarize(
+      num_obs = dplyr::n(),
+      pct_pos = sum(y == 1) / num_obs
+    ) |>
+    ggplot2::ggplot(ggplot2::aes(x = .pred_1, y  = pct_pos)) +
+    ggplot2::geom_line()
 }

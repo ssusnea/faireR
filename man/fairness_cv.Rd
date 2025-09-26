@@ -88,5 +88,5 @@ compas_binary |>
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[yardstick:metric_set]{yardstick::metric_set()}}, \link[yardstick:yardstick-package]{yardstick::yardstick}
+\code{\link[yardstick:metric_set]{yardstick::metric_set()}}
 }
